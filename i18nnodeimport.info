@@ -1,0 +1,7 @@
+; $Id: i18nnodeimport.info,v 1.2.2.5 2008/09/25 19:16:11 jareyero Exp $
+name = Node Import Translation Support
+description = Give support for importing nodes with translation.
+dependencies[] = i18n
+dependencies[] = node_import
+package = Multilanguage
+core = 6.x

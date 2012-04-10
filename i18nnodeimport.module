@@ -1,0 +1,45 @@
+<?php
+
+/**
+* Implementation of hook_node_import_fields().
+*/
+function i18nnodeimport_node_import_fields($type) {
+  $fields = array();
+  error_log("here is error");
+
+  if (($node_type = node_import_type_is_node($type)) !== FALSE) {
+	drupal_set_message("DEBUG in i18n - $type");
+	error_log("here is error inside if");
+	$fields['language']['title'] = t('Language');
+	$fields['language']['is_required'] = FALSE;
+	$fields['language']['has_multiple'] = FALSE;
+	$fields['language']['default_value'] = 'en';
+	$fields['language']['module'] = 'i18n';
+    	$fields['language']['allowed_values'] = i18n_language_list();
+
+	$fields['tnid']['title'] = t('Translation Node Source ID');
+	$fields['tnid']['is_required'] = FALSE;
+	$fields['tnid']['has_multiple'] = FALSE;
+	$fields['tnid']['module'] = 'i18n';
+  }
+  return $fields;
+}
+
+/**
+ * Implementation of hook_node_import_postprocess().
+ */
+function i18nnodeimport_node_import_postprocess($type, $values, $options, $preview) {
+
+	if (!$preview && isset($values['nid']) &&
+	   ($node_type = node_import_type_is_node($type)) !== FALSE //&& 
+	) {
+		$node = node_load($values['nid']);
+		$node->tnid = $values['tnid'];
+		node_save($node);
+		watchdog('i18n import', 'New node %nid is set as translation of node %tnid', array('%nid' => $values['nid'], '%tnid' => $values['tnid']));
+	} else {
+		watchdog('i18n import', 'Translation is not created, %nid, %tnid', array('%nid' => $values['nid'], '%tnid' => $values['tnid']));
+
+	}
+}
+
